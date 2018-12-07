@@ -73,8 +73,8 @@ namespace better_priority_queue {
 				/** Returns true if the key was not inside, otherwise does nothing and returns false */
 				bool push(const Key& key, const Priority& priority, bool only_if_unknown=false) {
 					extend_ids(key);
-					if(id_to_heappos[key] >= 0) return false;
-					if(only_if_unknown && id_to_heappos[key] == -2) return true;
+					if(id_to_heappos[key] < ((size_t)-2)) return false;
+					if(only_if_unknown && id_to_heappos[key] == ((size_t)-2)) return true;
 					// otherwise we have id_to_heappos[key] = -1, unseen key
 					size_t n = heap.size();
 					id_to_heappos[key] = n; // For consistency in the case where nothing moves (early return)
@@ -85,15 +85,15 @@ namespace better_priority_queue {
 
 				/** Returns true if the key was already inside, otherwise does nothing and returns false */
 				bool update(const Key& key, const Priority& new_priority, bool only_if_higher=false) {
-					if(key < id_to_heappos.size()) return false;
+					if(key >= id_to_heappos.size()) return false;
 					size_t heappos = id_to_heappos[key];
-					if(heappos < 0) return false;
+					if(heappos >= ((size_t)-2)) return false;
 					Priority& priority = heap[heappos].priority;
-					if(priority > new_priority) {
+					if(new_priority > priority) {
 						priority = new_priority;
 						sift_up(heappos);
 					}
-					else if(!only_if_higher && priority < new_priority) {
+					else if(!only_if_higher && new_priority < priority) {
 						priority = new_priority;
 						sift_down(heappos);
 					}
@@ -104,7 +104,7 @@ namespace better_priority_queue {
 				void extend_ids(Key k) {
 					size_t new_size = k+1;
 					if(id_to_heappos.size() < new_size)
-						id_to_heappos.resize(new_size);
+						id_to_heappos.resize(new_size, -1);
 				}
 
 				void sift_down(size_t heappos) {
