@@ -32,14 +32,6 @@ namespace priority_queue {
 				/** first is priority, second is key */
 				const priority_queue_node<Key,Priority>& top() const { return heap.front(); }
 
-				void push(const Key& key, const Priority& priority) {
-					size_t n = heap.size();
-					extend_ids(key);
-					id_to_heappos[key] = n; // For consistency in the case where nothing moves (early return)
-					heap.emplace_back(key,priority);
-					sift_up(n);
-				}
-
 				void pop() {
 					if(size() == 0) return;
 					if(size() > 1)
@@ -58,8 +50,37 @@ namespace priority_queue {
 					return ret;
 				}
 
-				void update(const Key& key, const Priority& new_priority) {
+				void set(const Key& key, const Priority& priority) {
+					if(key < id_to_heappos.size() && id_to_heappos[key] >= 0) // This key is already in the pQ
+						update(key, priority);
+					else
+						push(key, priority);
+				}
+
+				std::pair<bool,Priority> get_priority(const Key& key) {
+					if(key >= id_to_heappos.size()) {
+						size_t pos = id_to_heappos[key];
+						if(pos >= 0) {
+							return {true, heap[pos].priority};
+						}
+					}
+					return {false, 0};
+				}
+
+				bool push(const Key& key, const Priority& priority) {
+					extend_ids(key);
+					if(id_to_heappos[key] < 0) return false;
+					size_t n = heap.size();
+					id_to_heappos[key] = n; // For consistency in the case where nothing moves (early return)
+					heap.emplace_back(key,priority);
+					sift_up(n);
+					return true;
+				}
+
+				bool update(const Key& key, const Priority& new_priority) {
+					if(key < id_to_heappos.size()) return false;
 					size_t heappos = id_to_heappos[key];
+					if(heappos < 0) return false;
 					Priority& priority = heap[heappos].priority;
 					if(priority < new_priority) {
 						priority = new_priority;
@@ -68,6 +89,7 @@ namespace priority_queue {
 						priority = new_priority;
 						sift_up(heappos);
 					}
+					return true;
 				}
 
 			private:
