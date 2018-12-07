@@ -2,7 +2,7 @@
 #include "updatable_priority_queue.h"
 
 int main() {
-	priority_queue::updatable_priority_queue<int,int> pQ;
+	better_priority_queue::updatable_priority_queue<int,int> pQ;
 	pQ.push(0, 30);
 	pQ.push(1, 10);
 	pQ.push(2, 20);

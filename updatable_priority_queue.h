@@ -1,7 +1,7 @@
 #include <utility>
 #include <vector>
 
-namespace priority_queue {
+namespace better_priority_queue {
 	template <typename Key, typename Priority>
 		struct priority_queue_node {
 			Priority priority;
