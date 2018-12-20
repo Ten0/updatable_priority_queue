@@ -30,7 +30,7 @@ As of now, the priority queue can only take values that can be converted to `siz
 The typical use of a priority queue in C++ is to create a `priority_queue<pair<Priority, Key>>` where `Priority` is the type of your priority (`int`, `float`,...) and `Key` is the value of whatever you want to assign a priority to.
 
 It always bothered me that the `std::priority_queue` data structure did not provide functions to update the priorities, and that I couldn't find a proper implementation that would do exactly this.
-How could it though, considering there is no *key/value* notion iin the `priority_queue` itself ?
+How could it though, considering there is no *key/value* notion in the `priority_queue` itself ?
 
 Hence, the typical C++ management of problems that would require such updates would be either :
 - to use a `set<pair<Priority, Key>>`, an update then would be to remove the old element and insert a new one.
