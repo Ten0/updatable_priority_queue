@@ -145,7 +145,7 @@ namespace better_priority_queue {
 						heappos = parent;
 						if(heappos <= 0) break;
 						parent = (parent-1)/2;
-					} while(heap[heappos] > heap[parent]);
+					} while(val > heap[parent]);
 					heap[heappos] = std::move(val);
 					id_to_heappos[heap[heappos].key] = heappos;
 				}
