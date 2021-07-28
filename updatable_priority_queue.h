@@ -32,11 +32,13 @@ namespace better_priority_queue {
 				/** first is priority, second is key */
 				const priority_queue_node<Key,Priority>& top() const { return heap.front(); }
 
-				void pop(bool remember_pop=false) {
+				void pop(bool remember_key=false) {
 					if(size() == 0) return;
-					id_to_heappos[heap.front().key] = -1-remember_pop;
-					if(size() > 1)
+					id_to_heappos[heap.front().key] = -1-remember_key;
+					if(size() > 1) {
 						*heap.begin() = std::move(*(heap.end()-1));
+						id_to_heappos[heap.front().key] = 0;
+					}
 					heap.pop_back();
 					sift_down(0);
 				}
@@ -45,8 +47,10 @@ namespace better_priority_queue {
 					if(size() == 0) return priority_queue_node<Key, Priority>(-1, Priority());
 					priority_queue_node<Key,Priority> ret = std::move(*heap.begin());
 					id_to_heappos[ret.key] = -1-remember_key;
-					if(size() > 1)
+					if(size() > 1) {
 						*heap.begin() = std::move(*(heap.end()-1));
+						id_to_heappos[heap.front().key] = 0;
+					}
 					heap.pop_back();
 					sift_down(0);
 					return ret;
@@ -56,16 +60,16 @@ namespace better_priority_queue {
 				 *  Returns true if the priority was changed.
 				 * */
 				bool set(const Key& key, const Priority& priority, bool only_if_higher=false) {
-					if(key < id_to_heappos.size() && id_to_heappos[key] >= 0) // This key is already in the pQ
+					if(key < id_to_heappos.size() && id_to_heappos[key] < ((size_t)-2)) // This key is already in the pQ
 						return update(key, priority, only_if_higher);
 					else
 						return push(key, priority, only_if_higher);
 				}
 
 				std::pair<bool,Priority> get_priority(const Key& key) {
-					if(key >= id_to_heappos.size()) {
+					if(key < id_to_heappos.size()) {
 						size_t pos = id_to_heappos[key];
-						if(pos >= 0) {
+						if(pos < ((size_t)-2)) {
 							return {true, heap[pos].priority};
 						}
 					}
